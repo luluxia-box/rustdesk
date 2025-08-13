@@ -1583,7 +1583,9 @@ String bool2option(String option, bool b) {
       option == kOptionForceAlwaysRelay) {
     res = b ? 'Y' : defaultOptionNo;
   } else {
-    assert(false);
+    if (option != kOptionEnableUdpPunch && option != kOptionEnableIpv6Punch) {
+      assert(false);
+    }
     res = b ? 'Y' : 'N';
   }
   return res;
@@ -3907,4 +3909,25 @@ String get appName {
     _appName = bind.mainGetAppNameSync();
   }
   return _appName;
+}
+
+String getConnectionText(bool secure, bool direct, String streamType) {
+  String connectionText;
+  if (secure && direct) {
+    connectionText = translate("Direct and encrypted connection");
+  } else if (secure && !direct) {
+    connectionText = translate("Relayed and encrypted connection");
+  } else if (!secure && direct) {
+    connectionText = translate("Direct and unencrypted connection");
+  } else {
+    connectionText = translate("Relayed and unencrypted connection");
+  }
+  if (streamType == 'Relay') {
+    streamType = 'TCP';
+  }
+  if (streamType.isEmpty) {
+    return connectionText;
+  } else {
+    return '$connectionText ($streamType)';
+  }
 }
